@@ -1,10 +1,9 @@
 import tweepy
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
-import json
 
 # constants
-_max_tweets = 100
+_max_tweets = 500
 
 
 def init():
@@ -21,24 +20,22 @@ def init():
 
 class HealthListener(StreamListener):
     def __init__(self):
-        self.tweet_num = 1
+        self.tweet_num = 0
+        self.f = open('tweets.json', 'w+')
 
     def on_data(self, data):
-        tweet = json.loads(data)
-        text = tweet['text']
-        print('Tweet #{}: {}'.format(self.tweet_num, text))
 
-        self.tweet_num += 1
-        return True
+        if self.tweet_num < _max_tweets:
+            # Continue writing to file
+            self.f.write(data)
+            print('{} tweet(s) collected'.format(self.tweet_num+1))
+
+            self.tweet_num += 1
+        else:
+            self.f.close()
+            print('Finished. Ending stream...')
+            return False  # finish
 
     def on_error(self, status):
         print(status)
         return True
-
-
-def collect(api, query):
-    tweets = [
-            status for status in
-            tweepy.Cursor(api.search, q=query).items(_max_tweets)
-            ]
-    return tweets
