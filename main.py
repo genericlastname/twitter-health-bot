@@ -3,7 +3,7 @@ from collect import HealthListener
 from tweepy import Stream
 
 
-if __name__ == '__main__':
+def collect():
     api = init()
 
     keywords = [
@@ -18,6 +18,12 @@ if __name__ == '__main__':
             'chipotle',
             'chick fil a',
             ]
+    location = [-91.7468, 30.1594, -88.0554, 35.0165]
+
     # start stream
     health_stream = Stream(api.auth, HealthListener())
-    health_stream.filter(track=keywords)
+    health_stream.filter(track=keywords, locations=location)
+
+
+if __name__ == '__main__':
+    collect()
