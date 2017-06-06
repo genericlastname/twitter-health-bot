@@ -1,6 +1,15 @@
+#!/usr/bin/env python
+
+# collect.py -- Script to handle collection of tweets
+
+
 import tweepy
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
+from tweepy import Stream
+import json
+import csv
+
 
 # constants
 _max_tweets = 500
@@ -39,3 +48,32 @@ class HealthListener(StreamListener):
     def on_error(self, status):
         print(status)
         return True
+
+
+def collect():
+    api = init()
+    keywords = []
+
+    with open('keywords.txt') as f:
+        keywords = f.readlines()
+        keywords = [x.strip() for x in keywords]
+        f.close()
+
+    location = [-91.7468, 30.1594, -88.0554, 35.0165]
+
+    # start stream
+    health_stream = Stream(api.auth, HealthListener())
+    health_stream.filter(track=keywords, locations=location)
+
+
+def print_tweet(num=0):
+    f = open('tweets.json', 'r')
+
+    for x in range(0, 500):
+        data = f.readline()
+        print('{}: {}'.format(x+1, json.loads(data)['text']))
+
+
+if __name__ == '__main__':
+    collect()
+    print_tweet()
