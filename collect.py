@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 
 # collect.py -- Script to handle collection of tweets
-
-
 import tweepy
 from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 from tweepy import Stream
 import json
-import csv
 
 
 # constants
@@ -71,7 +68,9 @@ def print_tweet(num=0):
 
     for x in range(0, 500):
         data = f.readline()
-        print('{}: {}'.format(x+1, json.loads(data)['text']))
+
+        if json.loads(data)['text'] is not None:
+            print('{}: {}'.format(x+1, json.loads(data)['text']))
 
 
 if __name__ == '__main__':
